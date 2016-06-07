@@ -1,0 +1,42 @@
+{
+  "name": "we-plugin-file-local",
+  "description": "We.js local storage plugin",
+  "version": "1.0.0",
+  "main": "plugin.js",
+  "scripts": {
+    "test": "NODE_ENV=test LOG_LV=info ./node_modules/.bin/mocha test/bootstrap.js test/**/*.test.js"
+  },
+  "dependencies": {
+    "gm": "^1.22.0",
+    "uuid": "^2.0.2"
+  },
+  "devDependencies": {
+    "express-mysql-session": "^1.0.0",
+    "fs-extra": "^0.30.0",
+    "mocha": "^2.5.3",
+    "mysql": "^2.10.2",
+    "rimraf": "^2.5.2",
+    "supertest": "^1.2.0",
+    "we-core": "wejs/we-core",
+    "we-plugin-acl": "wejs/we-plugin-acl",
+    "we-plugin-user": "wejs/we-plugin-user",
+    "we-test-tools": "wejs/we-test-tools"
+  },
+  "keywords": [
+    "we.js",
+    "plugin",
+    "file",
+    "storage"
+  ],
+  "files": [
+    "files/public",
+    "lib",
+    "locales",
+    "server",
+    "install.js",
+    "plugin.js"
+  ],
+  "repository": "wejs/we-plugin-file-local",
+  "author": "Alberto Souza <contato@albertosouza.net>",
+  "license": "MIT"
+}
