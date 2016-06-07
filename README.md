@@ -6,8 +6,17 @@ Local storage strategy for we.js.
 
 - we-plugin-file
 
-## API
+## Installation
 
+```sh
+npm i --save we-plugin-file-local
+```
+
+## Configuration
+
+Uneed if local storage will be the unique storage
+
+All configurations in: [plugin.js](plugin.js) file
 
 ## Links
 
