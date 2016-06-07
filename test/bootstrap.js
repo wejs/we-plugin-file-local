@@ -37,7 +37,7 @@ after(function (callback) {
     we.db.defaultConnection.close();
 
     var tempFolders = [
-      projectPath + '/files/upload'
+      projectPath + '/files/uploads'
     ];
 
     we.utils.async.each(tempFolders, function(folder, next){
