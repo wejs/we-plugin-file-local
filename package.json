@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "gm": "^1.22.0",
+    "mkdirp": "^0.5.1",
     "uuid": "^2.0.2"
   },
   "devDependencies": {

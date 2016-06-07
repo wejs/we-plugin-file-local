@@ -1,3 +1,5 @@
 {
-	"response.forbidden.title": "response.forbidden.title"
+	"response.forbidden.title": "response.forbidden.title",
+	"response.notFound.title": "response.notFound.title",
+	"response.serveError.title": "response.serveError.title"
 }

@@ -5,6 +5,7 @@
 var gm = require('gm')
 var uuid = require('uuid')
 var path = require('path')
+var mkdirp = require('mkdirp')
 var fs = require('fs')
 
 module.exports = function loadPlugin(projectPath, Plugin) {
@@ -214,6 +215,47 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       }
     }
   });
+
+
+  /**
+   * Create file and image upload Folders
+   * For local storage
+   *
+   * @param  {Object}   we
+   * @param  {Function} done
+   */
+  plugin.createFileFolder = function createFileFolder (we, done) {
+    // create file upload path
+    mkdirp(we.config.upload.file.uploadPath, function (err) {
+      if (err) we.log.error('Error on create file upload path', err)
+    })
+
+    // create image upload path
+    var imageStyles = we.config.upload.image.avaibleStyles
+
+    we.utils.async.each(imageStyles, function (style, next) {
+
+      var imageDir = we.config.upload.image.uploadPath + '/' + style
+
+      fs.lstat(imageDir, function (err) {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            we.log.info('Creating the image upload directory: ' + imageDir)
+            return mkdirp(imageDir, function (err) {
+              if (err) we.log.error('Error on create upload path', err)
+              return next()
+            })
+          }
+          we.log.error('Error on create image dir: ', imageDir)
+          return next(err)
+        } else {
+          next()
+        }
+      })
+    }, done)
+  }
+
+  plugin.hooks.on('we:create:default:folders', plugin.createFileFolder)
 
   return plugin;
 };
