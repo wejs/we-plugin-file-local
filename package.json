@@ -1,7 +1,7 @@
 {
   "name": "we-plugin-file-local",
   "description": "We.js local storage plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "plugin.js",
   "scripts": {
     "test": "NODE_ENV=test LOG_LV=info ./node_modules/.bin/mocha test/bootstrap.js test/**/*.test.js"
@@ -25,8 +25,7 @@
     "we-test-tools": "wejs/we-test-tools"
   },
   "keywords": [
-    "we.js",
-    "plugin",
+    "wejs-plugin",
     "file",
     "storage"
   ],
@@ -40,5 +39,15 @@
   ],
   "repository": "wejs/we-plugin-file-local",
   "author": "Alberto Souza <contato@albertosouza.net>",
-  "license": "MIT"
+  "license": "MIT",
+  "wejs": {
+    "dependencies": {
+      "we-plugin-file": true
+    },
+    "plugins": {
+      "we-plugin-file": true,
+      "we-plugin-acl": true,
+      "we-plugin-user": true
+    }
+  }
 }
