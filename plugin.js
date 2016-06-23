@@ -102,7 +102,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             })
           },
           getUrlFromFile: function getUrlFromFile (format, file) {
-            return '/api/v1/image/' + (format || 'original') + '/' + file.name
+            return plugin.we.config.hostname+'/api/v1/image/' + (format || 'original') + '/' + file.name
           },
           getDestination: function getDestination (style) {
             if (!style) style = 'original'
@@ -200,7 +200,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             })
           },
           getUrlFromFile: function getUrlFromFile (format, file) {
-            return '/api/v1/file-download/' + file.name
+            return plugin.we.config.hostname+'/api/v1/file-download/' + file.name
           },
           getDestination: function getDestination () {
             return plugin.we.config.upload.file.uploadPath + '/'
