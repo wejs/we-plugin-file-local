@@ -2,14 +2,12 @@
 
 Local storage strategy for we.js.
 
-## Requirement
-
-- we-plugin-file
+Upload and resize files to files/upload/images/[fileStyle] folder
 
 ## Installation
 
 ```sh
-npm i --save we-plugin-file-local
+we i we-plugin-file-local
 ```
 
 ## Configuration
@@ -20,7 +18,7 @@ All configurations in: [plugin.js](plugin.js) file
 
 ## Links
 
-> * We.js site: http://wejs.org
+* We.js site: http://wejs.org
 
 ## License
 
