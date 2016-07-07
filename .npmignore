@@ -6,3 +6,5 @@ files/uploads
 .travis.yml
 .gitignore
 *.log
+npm-debug.log
+npm-debug.log.*

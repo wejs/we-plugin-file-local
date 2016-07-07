@@ -16,6 +16,16 @@ module.exports = function loadPlugin(projectPath, Plugin) {
     cb(null, file.name)
   }
 
+  plugin.getMulter = function() {
+    if (plugin.we.plugins['we-plugin-file']) {
+      return  plugin.we.plugins['we-plugin-file'].multer
+    } else if (plugin.we.plugins.project.multer) {
+      return plugin.we.plugins.project.multer
+    } else {
+      plugin.we.log.warn('Multer not found')
+    }
+  }
+
   // set plugin configs
   plugin.setConfigs({
     upload: {
@@ -34,7 +44,10 @@ module.exports = function loadPlugin(projectPath, Plugin) {
         localImages: {
           isLocalStorage: true,
           getStorage: function getStorage () {
-            return plugin.we.plugins['we-plugin-file'].multer
+            var multer = plugin.getMulter()
+            if (!multer) return;
+
+            return multer
             .diskStorage({
               destination: this.getDestination('original'),
               filename: plugin.defaultFilename
@@ -149,7 +162,10 @@ module.exports = function loadPlugin(projectPath, Plugin) {
         localFiles: {
           isLocalStorage: true,
           getStorage: function getStorage () {
-            return plugin.we.plugins['we-plugin-file'].multer
+            var multer = plugin.getMulter()
+            if (!multer) return;
+
+            return multer
             .diskStorage({
               destination: this.getDestination(),
               // projectPath + '/files/uploads/files',

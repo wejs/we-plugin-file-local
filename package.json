@@ -48,6 +48,7 @@
       "we-plugin-file": true,
       "we-plugin-acl": true,
       "we-plugin-user": true
-    }
+    },
+    "devPlugins": {}
   }
 }
