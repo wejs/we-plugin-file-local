@@ -28,6 +28,8 @@ module.exports = function loadPlugin(projectPath, Plugin) {
 
   // set plugin configs
   plugin.setConfigs({
+    fileHostname: null, // config to set generic file hostname, if you dont want set an hostname set this to ""
+    fileImageHostname: null, // config to set image hostname, if you dont want set an hostname set this to ""
     upload: {
       defaultImageStorage: 'localImages',
       defaultFileStorage: 'localFiles',
@@ -115,7 +117,11 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             })
           },
           getUrlFromFile: function getUrlFromFile (format, file) {
-            return plugin.we.config.hostname+'/api/v1/image/' + (format || 'original') + '/' + file.name
+            if (typeof plugin.we.config.fileImageHostname == 'string') {
+              return plugin.we.config.fileImageHostname+'/api/v1/image/' + (format || 'original') + '/' + file.name
+            } else {
+              return plugin.we.config.hostname+'/api/v1/image/' + (format || 'original') + '/' + file.name
+            }
           },
           getDestination: function getDestination (style) {
             if (!style) style = 'original'
@@ -216,7 +222,11 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             })
           },
           getUrlFromFile: function getUrlFromFile (format, file) {
-            return plugin.we.config.hostname+'/api/v1/file-download/' + file.name
+            if (typeof plugin.we.config.fileHostname == 'string') {
+              return plugin.we.config.fileHostname+'/api/v1/file-download/' + file.name
+            } else {
+              return plugin.we.config.hostname+'/api/v1/file-download/' + file.name
+            }
           },
           getDestination: function getDestination () {
             return plugin.we.config.upload.file.uploadPath + '/'
