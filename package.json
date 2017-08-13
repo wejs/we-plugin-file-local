@@ -1,6 +1,6 @@
 {
   "name": "we-plugin-file-local",
-  "description": "We.js local storage plugin",
+  "description": "We.js local storage plugin, save files to one folder inside the host",
   "version": "1.1.2",
   "main": "plugin.js",
   "scripts": {
