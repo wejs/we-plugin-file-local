@@ -7,17 +7,17 @@
     "test": "NODE_ENV=test LOG_LV=info ./node_modules/.bin/mocha test/bootstrap.js test/**/*.test.js"
   },
   "dependencies": {
-    "gm": "^1.22.0",
+    "gm": "^1.23.0",
     "mkdirp": "^0.5.1",
-    "uuid": "^2.0.2"
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
-    "express-mysql-session": "^1.0.0",
-    "fs-extra": "^0.30.0",
-    "mocha": "^2.5.3",
-    "mysql": "^2.10.2",
-    "rimraf": "^2.5.2",
-    "supertest": "^1.2.0",
+    "express-mysql-session": "^1.2.2",
+    "fs-extra": "^4.0.1",
+    "mocha": "^3.5.0",
+    "mysql": "^2.14.1",
+    "rimraf": "^2.6.1",
+    "supertest": "^3.0.0",
     "we-core": "wejs/we-core",
     "we-plugin-acl": "wejs/we-plugin-acl",
     "we-plugin-file": "wejs/we-plugin-file",
