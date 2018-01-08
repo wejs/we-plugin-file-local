@@ -6,7 +6,8 @@ const gm = require('gm'),
   uuid = require('uuid'),
   path = require('path'),
   mkdirp = require('mkdirp'),
-  fs = require('fs')
+  fs = require('fs'),
+  recreateAllImageSizes = require('./lib/recreateAllImageSizes.js');
 
 module.exports = function loadPlugin(projectPath, Plugin) {
   const plugin = new Plugin(__dirname);
@@ -151,7 +152,10 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             const originalFile = this.uploader.getPath('original', this.file.name);
             const newImagePath = this.uploader.getPath(imageStyle, this.file.name);
             // set new image style to save in DB
-            this.file.urls[imageStyle] = this.uploader.getUrlFromFile (imageStyle, this.file);
+
+            const urls = this.file.urls || {};
+            urls[imageStyle] = this.uploader.getUrlFromFile (imageStyle, this.file);
+            this.file.urls = urls;
 
             const width = styles[imageStyle].width;
             const height = (styles[imageStyle].height || styles[imageStyle].heigth);
@@ -239,6 +243,35 @@ module.exports = function loadPlugin(projectPath, Plugin) {
     }
   });
 
+  /**
+   * Plugin fast loader for speed up We.js project bootstrap
+   *
+   * @param  {Object}   we
+   * @param {Function} done    callback
+   */
+  plugin.fastLoader = function fastLoader(we, done) {
+    // - Controllers:
+    we.controllers.imageLocal = new we.class.Controller({
+      recreateAllForOneStyle(req, res) {
+        recreateAllImageSizes(req.we, req.params.style, (err, result)=> {
+          console.log('err>', err);
+          if (err) return res.queryError(err);
+          res.send({ totalResized: result.count });
+        });
+      }
+    });
+
+    done();
+  }
+
+  plugin.setRoutes({
+    'get /image-local/resize-all/:style': {
+      'controller': 'imageLocal',
+      'action': 'recreateAllForOneStyle',
+      'permission': 'image_resizeAll',
+      'responseType': 'json'
+    }
+  });
 
   /**
    * Create file and image upload Folders
