@@ -154,7 +154,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             this.file.urls[imageStyle] = this.uploader.getUrlFromFile (imageStyle, this.file);
 
             const width = styles[imageStyle].width;
-            const height = styles[imageStyle].heigth;
+            const height = (styles[imageStyle].height || styles[imageStyle].heigth);
             // resize, center and crop to fit size
             gm(originalFile)
             .resize(width, height, '^')
