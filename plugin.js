@@ -31,6 +31,14 @@ module.exports = function loadPlugin(projectPath, Plugin) {
   plugin.setConfigs({
     fileHostname: null, // config to set generic file hostname, if you dont want set an hostname set this to ""
     fileImageHostname: null, // config to set image hostname, if you dont want set an hostname set this to ""
+
+    imageMaxSize: {
+      width: '1920',
+      height: '1440'
+    },
+    imageResizeStrategy: 'fill',
+    imageFillBG: '#ffffff',
+
     upload: {
       defaultImageStorage: 'localImages',
       defaultFileStorage: 'localFiles',
@@ -137,9 +145,41 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             we.utils.async.eachSeries(
               we.config.upload.image.avaibleStyles,
               this.resizeEach.bind({ file: file, uploader: this }),
-              done
+              (err)=> {
+                if (err) return done(err);
+                this.resizeOriginalIfNeed(file, done);
+              }
             );
           },
+
+          resizeOriginalIfNeed(file, done) {
+            // max sizes
+            const ms = plugin.we.config.imageMaxSize;
+
+            gm(file.path)
+            .identify( (err, data)=> {
+              if (err) return done(err);
+
+              const ed = file.extraData || {};
+              ed.size = data.size;
+              file.extraData = ed;
+
+              if (
+                data.size.width > ms.width ||
+                data.size.height > ms.height
+              ) {
+                gm(file.path)
+                .resize(ms.width, ms.height)
+                .gravity('Center')
+                .crop(ms.width, ms.height)
+                .write(file.path, done);
+              } else {
+                // dont need resize:
+                done();
+              }
+            });
+          },
+
           /**
            * Resize one image to fit image style size
            *
@@ -160,11 +200,32 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             const width = styles[imageStyle].width;
             const height = (styles[imageStyle].height || styles[imageStyle].heigth);
             // resize, center and crop to fit size
-            gm(originalFile)
-            .resize(width, height, '^')
+            this.uploader.resizeWithFill (
+              originalFile, width, height, newImagePath, next
+            );
+          },
+          resizeImage(orig, width, height, dest, cb) {
+            if (
+              plugin.we.config.imageResizeStrategy == 'fill') {
+              this.resizeWithFill(
+                orig, width, height, dest, cb
+              );
+            } else {
+              // resize, center and crop to fit size
+              gm(orig)
+              .resize(width, height, '^')
+              .gravity('Center')
+              .crop(width, height)
+              .write(dest, cb);
+            }
+          },
+          resizeWithFill(orig, width, height, dest, cb) {
+            gm(orig)
+            .resize(width, height)
             .gravity('Center')
-            .crop(width, height)
-            .write(newImagePath, next)
+            .background(plugin.we.config.imageFillBG)
+            .extent(width, height)
+            .write(dest, cb);
           }
         },
         localFiles: {
@@ -254,7 +315,6 @@ module.exports = function loadPlugin(projectPath, Plugin) {
     we.controllers.imageLocal = new we.class.Controller({
       recreateAllForOneStyle(req, res) {
         recreateAllImageSizes(req.we, req.params.style, (err, result)=> {
-          console.log('err>', err);
           if (err) return res.queryError(err);
           res.send({ totalResized: result.count });
         });

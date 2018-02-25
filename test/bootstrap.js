@@ -36,7 +36,7 @@ after(function (callback) {
 
     we.db.defaultConnection.close();
 
-    var tempFolders = [
+    let tempFolders = [
       projectPath + '/files/uploads'
     ];
 
@@ -47,4 +47,8 @@ after(function (callback) {
       callback();
     })
   })
+});
+
+after(function () {
+  process.exit();
 });
