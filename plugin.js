@@ -200,7 +200,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             const width = styles[imageStyle].width;
             const height = (styles[imageStyle].height || styles[imageStyle].heigth);
             // resize, center and crop to fit size
-            this.uploader.resizeWithFill (
+            this.uploader.resizeImage(
               originalFile, width, height, newImagePath, next
             );
           },
