@@ -36,7 +36,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       width: '1920',
       height: '1440'
     },
-    imageResizeStrategy: 'fill',
+    imageResizeStrategy: 'cut',
     imageFillBG: '#ffffff',
 
     upload: {
