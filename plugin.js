@@ -12,6 +12,8 @@ const gm = require('gm'),
 module.exports = function loadPlugin(projectPath, Plugin) {
   const plugin = new Plugin(__dirname);
 
+  plugin.urlUploader = require('./lib/urlUploader.js');
+
   plugin.defaultFilename = function defaultFilename (req, file, cb) {
     file.name = Date.now() + '_' + uuid.v1() + '.' + file.originalname.split('.').pop();
     cb(null, file.name);
