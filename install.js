@@ -15,5 +15,25 @@ module.exports = {
       }
       return done();
     });
+  },
+  updates: function() {
+    return [{
+      version: '2.1.1',
+      update(we, done) {
+        we.log.info('Start we-plugin-file-local update v2.1.1');
+
+        const sql = 'ALTER TABLE `files` CHANGE COLUMN `mime` `mime` VARCHAR(255) NULL DEFAULT NULL ;';
+        we.db.defaultConnection
+        .query(sql)
+        .then( ()=> {
+          we.log.info('Done we-plugin-file-local update v2.1.1');
+          done();
+          return null;
+        })
+        .catch(done);
+      }
+    }];
   }
 }
+
+

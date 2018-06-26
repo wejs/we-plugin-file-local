@@ -12,7 +12,10 @@ const gm = require('gm'),
 module.exports = function loadPlugin(projectPath, Plugin) {
   const plugin = new Plugin(__dirname);
 
-  plugin.urlUploader = require('./lib/urlUploader.js');
+  plugin.urlImageUploader = require('./lib/urlImageUploader.js');
+  plugin.urlUploader = plugin.urlImageUploader
+
+  plugin.urlFileUploader = require('./lib/urlFileUploader.js');
 
   plugin.defaultFilename = function defaultFilename (req, file, cb) {
     file.name = Date.now() + '_' + uuid.v1() + '.' + file.originalname.split('.').pop();

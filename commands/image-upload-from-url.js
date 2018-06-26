@@ -1,7 +1,8 @@
-const uU = require('../lib/urlUploader.js');
 let we;
 
 module.exports = function (program, helpers) {
+  const uU = require('../lib/urlImageUploader.js');
+
   program
   .command('image-upload-from-url <url> <uid>')
   .alias('iufu')
