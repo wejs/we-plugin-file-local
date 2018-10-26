@@ -174,6 +174,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
                 data.size.height > ms.height
               ) {
                 gm(file.path)
+                .autoOrient()
                 .resize(ms.width, ms.height)
                 .gravity('Center')
                 .crop(ms.width, ms.height)
@@ -218,6 +219,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             } else {
               // resize, center and crop to fit size
               gm(orig)
+              .autoOrient()
               .resize(width, height, '^')
               .gravity('Center')
               .crop(width, height)
@@ -226,6 +228,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
           },
           resizeWithFill(orig, width, height, dest, cb) {
             gm(orig)
+            .autoOrient()
             .resize(width, height)
             .gravity('Center')
             .background(plugin.we.config.imageFillBG)
