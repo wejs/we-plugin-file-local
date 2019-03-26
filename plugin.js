@@ -7,7 +7,8 @@ const gm = require('gm'),
   path = require('path'),
   mkdirp = require('mkdirp'),
   fs = require('fs'),
-  recreateAllImageSizes = require('./lib/recreateAllImageSizes.js');
+  recreateAllImageSizes = require('./lib/recreateAllImageSizes.js'),
+  resetAllImageURLs = require('./lib/resetAllImageURLs.js');
 
 module.exports = function loadPlugin(projectPath, Plugin) {
   const plugin = new Plugin(__dirname);
@@ -131,9 +132,9 @@ module.exports = function loadPlugin(projectPath, Plugin) {
           getUrlFromFile(format, file) {
             if (typeof plugin.we.config.fileImageHostname == 'string') {
               return plugin.we.config.fileImageHostname+'/api/v1/image/' + (format || 'original') + '/' + file.name;
-            } else {
-              return plugin.we.config.hostname+'/api/v1/image/' + (format || 'original') + '/' + file.name;
             }
+
+            return '/api/v1/image/' + (format || 'original') + '/' + file.name;
           },
           getDestination(style) {
             if (!style) style = 'original';
@@ -294,9 +295,9 @@ module.exports = function loadPlugin(projectPath, Plugin) {
           getUrlFromFile(format, file) {
             if (typeof plugin.we.config.fileHostname == 'string') {
               return plugin.we.config.fileHostname+'/api/v1/file-download/' + file.name;
-            } else {
-              return plugin.we.config.hostname+'/api/v1/file-download/' + file.name;
             }
+
+            return '/api/v1/file-download/' + file.name;
           },
           getDestination() {
             return plugin.we.config.upload.file.uploadPath + '/';
@@ -326,6 +327,12 @@ module.exports = function loadPlugin(projectPath, Plugin) {
           if (err) return res.queryError(err);
           res.send({ totalResized: result.count });
         });
+      },
+      resetAllUrls(req, res) {
+        resetAllImageURLs(req.we, (err, result)=> {
+          if (err) return res.queryError(err);
+          res.send({ totalResized: result.count });
+        });
       }
     });
 
@@ -337,6 +344,12 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       'controller': 'imageLocal',
       'action': 'recreateAllForOneStyle',
       'permission': 'image_resizeAll',
+      'responseType': 'json'
+    },
+    'get /image-local/reset-all-urls': {
+      'controller': 'imageLocal',
+      'action': 'resetAllUrls',
+      'permission': 'image_resetAllUrls',
       'responseType': 'json'
     }
   });
