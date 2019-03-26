@@ -1,54 +1,88 @@
-var projectPath = process.cwd();
-var deleteDir = require('rimraf');
-var testTools = require('we-test-tools');
-var path = require('path');
-var we;
+const projectPath = process.cwd(),
+  path = require('path'),
+  deleteDir = require('rimraf'),
+  testTools = require('we-test-tools');
+
+let we;
+
+before(function(callback) {
+  testTools.copyLocalSQLiteConfigIfNotExitst(projectPath, callback);
+});
 
 before(function(callback) {
   this.slow(100);
 
-  testTools.copyLocalConfigIfNotExitst(projectPath, function() {
-    var We = require('we-core');
+  const We = require('we-core');
     we = new We();
 
-    testTools.init({}, we);
+  testTools.init({}, we);
 
-    we.bootstrap({
-      i18n: {
-        directory: path.join(__dirname, 'locales'),
-        updateFiles: true
+  we.bootstrap({
+    port: 9800,
+    hostname: 'http://localhost:9800',
+    appName: 'We test',
+    session: getSessionConfigs(),
+    database: {
+      test: {
+        dialect: 'sqlite',
+        storage: path.join(projectPath, 'database.sqlite')
       }
-    } , function(err, we) {
-      if (err) throw err;
-
-      we.startServer(function(err) {
-        if (err) throw err;
-        callback();
-      });
-    });
-  });
+    },
+    i18n: {
+      directory: path.join(__dirname, 'locales'),
+      updateFiles: true
+    }
+  } , callback);
 });
 
-//after all tests
+// start the server:
+before(function (callback) {
+  we.plugins['we-plugin-file-local'] = we.plugins.project;
+  we.startServer(callback);
+});
+
+// after all tests remove test folders and delete the database:
 after(function (callback) {
-  testTools.helpers.resetDatabase(we, function(err) {
+  testTools.helpers.resetDatabase(we, (err)=> {
     if(err) return callback(err);
 
     we.db.defaultConnection.close();
 
-    let tempFolders = [
-      projectPath + '/files/uploads'
+    const tempFolders = [
+      path.join(projectPath + 'files', 'config'),
+      path.join(projectPath, 'database.sqlite'),
+      path.join(projectPath, 'sessionsDB'),
+      path.join(projectPath, 'files', 'sqlite'),
+      path.join(projectPath, 'files','uploads')
     ];
 
-    we.utils.async.each(tempFolders, function(folder, next){
+    we.utils.async.each(tempFolders, (folder, next)=> {
       deleteDir( folder, next);
-    }, function(err) {
-      if (err) throw new Error(err);
-      callback();
-    })
-  })
+    }, callback);
+  });
 });
 
 after(function () {
-  process.exit();
+  we.exit(process.exit);
 });
+
+function getSessionConfigs() {
+  const session = require('express-session');
+  const SQLiteStore = require('connect-sqlite3')(session);
+  const configs = {};
+
+  // change host and port to your redis cfgs:
+
+  configs.session = {
+    secret: '12345678910',
+    store: new SQLiteStore({
+      table: 's_session',
+      db: 'sessionsDB',
+      dir: projectPath
+    }),
+    resave: false, // don't save session if unmodified
+    saveUninitialized: false
+  };
+
+  return configs.session;
+}

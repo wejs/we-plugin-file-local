@@ -75,17 +75,29 @@ describe('imageFeature', function () {
 
       imageDataStub.urls = {}
 
-      db.models.user.create(userStub).then(function(user) {
+      db.models.user
+      .create(userStub)
+      .then(function(user) {
         //imageDataStub.creator = user.id;
-        db.models.image.create(imageDataStub).then(function(image) {
-          image.setCreator(user).then(function(){
+        return db.models.image
+        .create(imageDataStub)
+        .then(function(image) {
+          return image.setCreator(user)
+          .then(function() {
             image.fetchAssociatedIds(function(err) {
-              if(err) throw err;
+
+              console.log('error', err);
+
+              if(err) return done(err);
               done();
             });
           })
-        }).catch(done);
-      }).catch(done);
+        });
+      })
+      .catch((err)=>{
+        console.log(err);
+        throw err;
+      });
     });
   });
 
