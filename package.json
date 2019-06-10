@@ -23,7 +23,7 @@
     "we-plugin-auth": "^2.3.1",
     "we-plugin-file": "^2.0.5",
     "we-plugin-user": "^2",
-    "we-test-tools": "wejs/we-test-tools#0.3.21"
+    "we-test-tools": "0.3.22"
   },
   "keywords": [
     "wejs-plugin",
@@ -35,6 +35,7 @@
     "lib",
     "locales",
     "server",
+    "commands",
     "install.js",
     "plugin.js"
   ],
