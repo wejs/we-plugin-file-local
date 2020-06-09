@@ -17,6 +17,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
   plugin.urlUploader = plugin.urlImageUploader
 
   plugin.urlFileUploader = require('./lib/urlFileUploader.js');
+  plugin.rebuildLocalImagesStyles = require('./lib/rebuildLocalImagesStyles.js');
 
   plugin.defaultFilename = function defaultFilename (req, file, cb) {
     file.name = Date.now() + '_' + uuid.v1() + '.' + file.originalname.split('.').pop();
