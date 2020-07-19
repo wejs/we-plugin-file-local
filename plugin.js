@@ -8,7 +8,8 @@ const gm = require('gm'),
   mkdirp = require('mkdirp'),
   fs = require('fs'),
   recreateAllImageSizes = require('./lib/recreateAllImageSizes.js'),
-  resetAllImageURLs = require('./lib/resetAllImageURLs.js');
+  resetAllImageURLs = require('./lib/resetAllImageURLs.js'),
+  heicConvert = require('heic-convert');
 
 module.exports = function loadPlugin(projectPath, Plugin) {
   const plugin = new Plugin(__dirname);
@@ -103,7 +104,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
                 stream.pipe(res);
 
                 stream.on('error', (err)=> {
-                  we.log.error('image:findOne: error in send file', err);
+                  we.log.error('image:findOne: error in send file', { error: err });
                 });
               }
             });
@@ -149,14 +150,19 @@ module.exports = function loadPlugin(projectPath, Plugin) {
           },
           generateImageStyles(file, done) {
             const we = plugin.we;
-            we.utils.async.eachSeries(
-              we.config.upload.image.avaibleStyles,
-              this.resizeEach.bind({ file: file, uploader: this }),
-              (err)=> {
-                if (err) return done(err);
-                this.resizeOriginalIfNeed(file, done);
-              }
-            );
+
+            this.convertFileIfIsNeed(file, (err)=> {
+              if (err) return done(err);
+
+              we.utils.async.eachSeries(
+                we.config.upload.image.avaibleStyles,
+                this.resizeEach.bind({ file: file, uploader: this }),
+                (err)=> {
+                  if (err) return done(err);
+                  this.resizeOriginalIfNeed(file, done);
+                }
+              );
+            });
           },
 
           resizeOriginalIfNeed(file, done) {
@@ -236,6 +242,55 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             .background(plugin.we.config.imageFillBG)
             .extent(width, height)
             .write(dest, cb);
+          },
+
+          convertFileIfIsNeed(file, cb) {
+            if (
+              file.mime === 'image/heif' ||
+              file.mime === 'image/heic'
+            ) {
+              return this.convertHeifToJPG(file, cb);
+            }
+
+            return cb();
+          },
+
+          convertHeifToJPG(file, cb) {
+            const oldPath = file.path;
+            let dest = file.path.replace('heic', 'jpg').replace('heif', 'jpg');
+
+            fs.readFile(file.path, (err, inputBuffer)=> {
+              if (err) return cb(err);
+
+              heicConvert({
+                buffer: inputBuffer, // the HEIC file buffer
+                format: 'JPEG',      // output format
+                quality: 0.7          // the jpeg compression quality, between 0 and 1
+              })
+              .then((outputBuffer)=> {
+                fs.writeFile(dest, outputBuffer, (err)=> {
+                  if (err) return cb(err);
+
+                  file.path = dest;
+                  file.name = file.name.replace('heic', 'jpg').replace('heif', 'jpg');
+                  file.filename = file.name;
+                  file.mimetype = 'image/jpeg';
+                  file.mime = file.mimetype;
+
+                  for(let name in file.urls) {
+                    file.urls[name] = file.urls[name].replace('heic', 'jpg').replace('heif', 'jpg');
+                  }
+
+                  const stats = fs.statSync(dest);
+                  file.size = stats.size;
+
+                  fs.unlinkSync(oldPath);
+
+                  cb();
+                });
+              })
+              .catch(cb);
+            });
           }
         },
         localFiles: {
@@ -280,7 +335,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
               stream.pipe(res);
 
               stream.on('error', function onError(err) {
-                we.log.error('file:findOne: error in send file', err)
+                we.log.error('file:findOne: error in send file', { error: err })
                 res.serverError(err);
               });
             })
@@ -365,7 +420,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
   plugin.createFileFolder = function createFileFolder (we, done) {
     // create file upload path
     mkdirp(we.config.upload.file.uploadPath, (err)=> {
-      if (err) we.log.error('Error on create file upload path', err);
+      if (err) we.log.error('Error on create file upload path', { error: err });
     });
 
     // create image upload path
@@ -379,11 +434,11 @@ module.exports = function loadPlugin(projectPath, Plugin) {
           if (err.code === 'ENOENT') {
             we.log.info('Creating the image upload directory: ' + imageDir)
             return mkdirp(imageDir, (err)=> {
-              if (err) we.log.error('Error on create upload path', err);
+              if (err) we.log.error('Error on create upload path', { error: err });
               return next();
             });
           }
-          we.log.error('Error on create image dir: ', imageDir);
+          we.log.error('Error on create image dir: ', { imageDir });
           return next(err);
         } else {
           next();

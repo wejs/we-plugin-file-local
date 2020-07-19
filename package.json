@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "gm": "^1.23.1",
+    "heic-convert": "^1.2.2",
     "mkdirp": "^0.5.1",
     "uuid": "^3.3.2"
   },
