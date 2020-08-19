@@ -8,23 +8,23 @@
   },
   "dependencies": {
     "gm": "^1.23.1",
-    "heic-convert": "^1.2.2",
-    "mkdirp": "^0.5.1",
-    "uuid": "^3.3.2"
+    "heic-convert": "^1.2.3",
+    "mkdirp": "^1.0.4",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "connect-sqlite3": "^0.9.11",
-    "fs-extra": "^7.0.1",
-    "mocha": "^6.0.2",
-    "mysql2": "^1.6.5",
-    "rimraf": "^2.6.3",
+    "fs-extra": "^9.0.1",
+    "mocha": "^8.1.1",
+    "mysql2": "^2.1.0",
+    "rimraf": "^3.0.2",
     "supertest": "^4.0.2",
-    "we-core": "^2.1.1",
-    "we-plugin-acl": "^1.2.13",
-    "we-plugin-auth": "^2.3.1",
-    "we-plugin-file": "^2.0.5",
-    "we-plugin-user": "^2",
-    "we-test-tools": "0.3.22"
+    "we-core": "^3.1.13",
+    "we-plugin-acl": "^1.2.16",
+    "we-plugin-auth": "^2.3.3",
+    "we-plugin-file": "^3.1.0",
+    "we-plugin-user": "^3",
+    "we-test-tools": "1.0.0"
   },
   "keywords": [
     "wejs-plugin",
