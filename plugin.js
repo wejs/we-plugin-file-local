@@ -419,9 +419,10 @@ module.exports = function loadPlugin(projectPath, Plugin) {
    */
   plugin.createFileFolder = function createFileFolder (we, done) {
     // create file upload path
-    mkdirp(we.config.upload.file.uploadPath, (err)=> {
-      if (err) we.log.error('Error on create file upload path', { error: err });
-    });
+    mkdirp(we.config.upload.file.uploadPath)
+      .catch((err)=> {
+        if (err) we.log.error('Error on create file upload path', { error: err });
+      });
 
     // create image upload path
     const imageStyles = we.config.upload.image.avaibleStyles
@@ -433,11 +434,13 @@ module.exports = function loadPlugin(projectPath, Plugin) {
         if (err) {
           if (err.code === 'ENOENT') {
             we.log.info('Creating the image upload directory: ' + imageDir)
-            return mkdirp(imageDir, (err)=> {
-              if (err) we.log.error('Error on create upload path', { error: err });
-              return next();
-            });
+            return mkdirp(imageDir)
+              .catch(()=> {
+                if (err) we.log.error('Error on create upload path', { error: err });
+                return next();
+              });
           }
+
           we.log.error('Error on create image dir: ', { imageDir });
           return next(err);
         } else {
