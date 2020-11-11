@@ -19,9 +19,8 @@ module.exports = function loadPlugin(projectPath, Plugin) {
 
   plugin.urlFileUploader = require('./lib/urlFileUploader.js');
   plugin.rebuildLocalImagesStyles = require('./lib/rebuildLocalImagesStyles.js');
-
   plugin.defaultFilename = function defaultFilename (req, file, cb) {
-    file.name = Date.now() + '_' + uuid.v1() + '.' + file.originalname.split('.').pop();
+    file.name = Date.now() + '_' + uuid.v1() + '.' + (file.originalname.split('.').pop().toLowerCase());
     cb(null, file.name);
   }
 
@@ -289,7 +288,9 @@ module.exports = function loadPlugin(projectPath, Plugin) {
                   cb();
                 });
               })
-              .catch(cb);
+              .catch((err)=> {
+                cb(err);
+              });
             });
           }
         },

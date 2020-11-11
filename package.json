@@ -10,18 +10,18 @@
     "gm": "^1.23.1",
     "heic-convert": "^1.2.3",
     "mkdirp": "^1.0.4",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "connect-sqlite3": "^0.9.11",
     "fs-extra": "^9.0.1",
-    "mocha": "^8.1.1",
-    "mysql2": "^2.1.0",
+    "mocha": "^8.2.1",
+    "mysql2": "^2.2.5",
     "rimraf": "^3.0.2",
-    "supertest": "^4.0.2",
-    "we-core": "^3.1.13",
+    "supertest": "^6.0.1",
+    "we-core": "^3.1.14",
     "we-plugin-acl": "^1.2.16",
-    "we-plugin-auth": "^2.3.3",
+    "we-plugin-auth": "^2.3.4",
     "we-plugin-file": "^3.1.0",
     "we-plugin-user": "^3",
     "we-test-tools": "1.0.0"
