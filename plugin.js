@@ -9,7 +9,7 @@ const gm = require('gm'),
   fs = require('fs'),
   recreateAllImageSizes = require('./lib/recreateAllImageSizes.js'),
   resetAllImageURLs = require('./lib/resetAllImageURLs.js'),
-  heicConvert = require('heic-convert');
+  convertHeicToJPG = require('./lib/convertHeicToJPG.js');
 
 module.exports = function loadPlugin(projectPath, Plugin) {
   const plugin = new Plugin(__dirname);
@@ -262,45 +262,34 @@ module.exports = function loadPlugin(projectPath, Plugin) {
             const oldPath = file.path;
             let dest = file.path.replace('heic', 'jpg').replace('heif', 'jpg');
 
-            fs.readFile(file.path, (err, inputBuffer)=> {
-              if (err) return cb(err);
+            log.verbose('convertHeifToJPG starting conversor', { file: file });
 
-              log.verbose('convertHeifToJPG starting conversor', { file: file });
-
-              heicConvert({
-                buffer: inputBuffer, // the HEIC file buffer
-                format: 'JPEG',      // output format
-                quality: 0.7          // the jpeg compression quality, between 0 and 1
-              })
-              .then((outputBuffer)=> {
-                fs.writeFile(dest, outputBuffer, (err)=> {
-                  if (err) {
-                    log.error('convertHeifToJPG writeFile Error on save file', { error: err, file: file })
-                    return cb(err);
-                  }
-
-                  file.path = dest;
-                  file.name = file.name.replace('heic', 'jpg').replace('heif', 'jpg');
-                  file.filename = file.name;
-                  file.mimetype = 'image/jpeg';
-                  file.mime = file.mimetype;
-
-                  for(let name in file.urls) {
-                    file.urls[name] = file.urls[name].replace('heic', 'jpg').replace('heif', 'jpg');
-                  }
-
-                  const stats = fs.statSync(dest);
-                  file.size = stats.size;
-
-                  fs.unlinkSync(oldPath);
-
-                  cb();
+            convertHeicToJPG(file.path, dest, plugin.we, (err)=> {
+              if (err) {
+                log.error('convertHeicToJPG error on convert image', {
+                  file,
+                  dest,
+                  error: err
                 });
-              })
-              .catch((err)=> {
-                log.error('convertHeifToJPG Error on convert file', { error: err, file: file })
-                cb(err);
-              });
+                return cb(err);
+              }
+
+              file.path = dest;
+              file.name = file.name.replace('heic', 'jpg').replace('heif', 'jpg');
+              file.filename = file.name;
+              file.mimetype = 'image/jpeg';
+              file.mime = file.mimetype;
+
+              for(let name in file.urls) {
+                file.urls[name] = file.urls[name].replace('heic', 'jpg').replace('heif', 'jpg');
+              }
+
+              const stats = fs.statSync(dest);
+              file.size = stats.size;
+
+              fs.unlinkSync(oldPath);
+
+              cb();
             });
           }
         },
