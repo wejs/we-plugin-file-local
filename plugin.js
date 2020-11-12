@@ -255,11 +255,17 @@ module.exports = function loadPlugin(projectPath, Plugin) {
           },
 
           convertHeifToJPG(file, cb) {
+            const log = plugin.we.log;
+
+            log.verbose('convertHeifToJPG will convert file', { file: file });
+
             const oldPath = file.path;
             let dest = file.path.replace('heic', 'jpg').replace('heif', 'jpg');
 
             fs.readFile(file.path, (err, inputBuffer)=> {
               if (err) return cb(err);
+
+              log.verbose('convertHeifToJPG starting conversor', { file: file });
 
               heicConvert({
                 buffer: inputBuffer, // the HEIC file buffer
@@ -268,7 +274,10 @@ module.exports = function loadPlugin(projectPath, Plugin) {
               })
               .then((outputBuffer)=> {
                 fs.writeFile(dest, outputBuffer, (err)=> {
-                  if (err) return cb(err);
+                  if (err) {
+                    log.error('convertHeifToJPG writeFile Error on save file', { error: err, file: file })
+                    return cb(err);
+                  }
 
                   file.path = dest;
                   file.name = file.name.replace('heic', 'jpg').replace('heif', 'jpg');
@@ -289,6 +298,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
                 });
               })
               .catch((err)=> {
+                log.error('convertHeifToJPG Error on convert file', { error: err, file: file })
                 cb(err);
               });
             });
