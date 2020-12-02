@@ -435,6 +435,9 @@ module.exports = function loadPlugin(projectPath, Plugin) {
           if (err.code === 'ENOENT') {
             we.log.info('Creating the image upload directory: ' + imageDir)
             return mkdirp(imageDir)
+              .then(()=> {
+                return next();
+              })
               .catch(()=> {
                 if (err) we.log.error('Error on create upload path', { error: err });
                 return next();
